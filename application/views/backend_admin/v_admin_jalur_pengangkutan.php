@@ -197,7 +197,7 @@
                     <div id="legend" class="panel panel-primary" style="background: white; padding: 10px;">
                         <div class="panel-heading">KETERANGAN IKON<br>! Klik garis untuk melihat detail</div>
                     </div>
-                    <div id="map" style="width:100%;height:400px;"></div>
+                    <div id="map" style="width:100%;height:540px;"></div>
                   </div>
                 </div>
                 <!-- /.row -->
@@ -268,8 +268,8 @@
    
   function initMap(){
         map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: -3.80859, lng: 102.264435}, 
-          zoom: 12
+          center: {lat: -3.82409, lng: 102.264435}, 
+          zoom: 12.2
         });
         
          var iconBase = 'https://maps.google.com/mapfiles/kml/pal3/';
@@ -285,7 +285,7 @@
           },
           supir: {
             icon: 'http://maps.google.com/mapfiles/kml/pal4/icon15.png',
-            name:'supir'
+            name:'Supir'
           }
         };
 

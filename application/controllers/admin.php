@@ -393,9 +393,9 @@ class admin extends CI_Controller {
 
 			// Loop semua supir
 			$semua_supir = $this->db->from('supir')->join('angkutan','angkutan.id_ang=supir.id_ang')->get()->result_array();
-
-			foreach($semua_supir as $supir){
-
+			$titik_used_ids = array();
+			foreach($semua_supir as $key => $supir){
+				
 				// Simpang terdekat dari supir
 				$terdekat = $this->db->query('SELECT *, (6371 * 
 					acos(
@@ -417,8 +417,10 @@ class admin extends CI_Controller {
 				// TITIK
 				$edge = $this->db->query('SELECT DISTINCT titik_1 AS titik from antik_metode UNION SELECT DISTINCT titik_2 from antik_metode ORDER BY titik')->result_array();
 
+
 			    // ANTAR TITIK
 			    $antik = $this->db->query('SELECT titik_1, titik_2, jarak_bellmanford, muatan FROM antik_metode GROUP BY titik_1, titik_2 UNION SELECT titik_2, titik_1, jarak, muatan FROM antik_metode GROUP BY titik_1, titik_2')->result_array();
+			    
 
 				foreach($edge as $edg){
 					$titik = $edg['titik'];
@@ -430,9 +432,25 @@ class admin extends CI_Controller {
 
 				// PATH PER TITIK
 				foreach($antik as $atk){
-					$AT[$atk['titik_1']][] = array('titik_2'=>$atk['titik_2'],
+					if (isset($titik_used_ids) && !empty($titik_used_ids)){
+						foreach($titik_used_ids as $useds){
+							if($useds['from']==$atk['titik_1'] && $useds['to']==$atk['titik_2'] )
+								break;
+							else{
+								if($useds['from']!=$atk['titik_1'] && $useds['to']!=$atk['titik_2']){
+									$AT[$atk['titik_1']][] = array('titik_2'=>$atk['titik_2'],
 													'jarak'=>$atk['jarak_bellmanford'],
 													'muatan'=>$atk['muatan']);
+									break;
+								}
+							}
+						}
+					}
+					else{
+						$AT[$atk['titik_1']][] = array('titik_2'=>$atk['titik_2'],
+													'jarak'=>$atk['jarak_bellmanford'],
+													'muatan'=>$atk['muatan']);
+					}
 				}
 
 				// ANTRIAN PRIORITAS PATH
@@ -450,6 +468,7 @@ class admin extends CI_Controller {
 				while(!empty($pq)){
 
 					$top = array_shift($pq); // ambil rute paling atas dan hapus dari antrian prioritas
+					
 					$from = $top['from'];
 					if($RUTE[$from]['muatan'] > $muatan_maks) break; // stop jika muatan sudah berlebih
 
@@ -479,6 +498,7 @@ class admin extends CI_Controller {
 						$pq[] = array('distance'=>$RUTE[$t]['distance'],
 										'from'=>$t,
 										'muatan'=>$RUTE[$t]['muatan']);
+						$titik_used_ids[] = array('from' => $from, 'to'=>$t);
 						// urutkan kembali dari yang terpendek
 						usort($pq, function($a, $b){return $a['distance']-$b['distance'];});
 					}
