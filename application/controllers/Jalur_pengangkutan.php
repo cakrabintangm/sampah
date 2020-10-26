@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Coba extends CI_Controller {
+class Jalur_pengangkutan extends CI_Controller {
 	
 	public function bellmanford(){
 		$edge = $this->db->get('antik')->result_array();

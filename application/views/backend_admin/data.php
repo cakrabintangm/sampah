@@ -14,8 +14,8 @@
                           <td><?php echo $no++; ?></td>
                           <td><?php echo $key['nm_tps']?></td>
                           <td>
-                            <a class="btn btn-success btn-flat center-block" href="<?php echo base_url('admin/edit_tps/').$key['id_tps']?>">Edit</a>
-                            <a class="btn btn-danger btn-flat center-block"  href="<?php echo base_url('admin/delete_tps/').$key['id_tps']?>" onclick="return confirm('apakah ada ingin menghapus data?');">Hapus</a>
+                            <a class="btn btn-success btn-flat center-block" href="<?php echo base_url('master-data/edit_tps/').$key['id_tps']?>">Edit</a>
+                            <a class="btn btn-danger btn-flat center-block"  href="<?php echo base_url('master-data/delete_tps/').$key['id_tps']?>" onclick="return confirm('apakah ada ingin menghapus data?');">Hapus</a>
                           </td>
                         </tr>
                       <?php } ?>
@@ -36,8 +36,8 @@
                           <td><?php echo $no++; ?></td>
                           <td><?php echo $key['nm_supir']?></td>
                           <td>
-                            <a class="btn btn-success btn-flat center-block" href="<?php echo base_url('admin/edit_supir/').$key['id_supir']?>">Edit</a>
-                            <a class="btn btn-danger btn-flat center-block"  href="<?php echo base_url('admin/delete_supir/').$key['id_supir']?>" onclick="return confirm('apakah ada ingin menghapus data?');">Hapus</a>
+                            <a class="btn btn-success btn-flat center-block" href="<?php echo base_url('master-data/edit_supir/').$key['id_supir']?>">Edit</a>
+                            <a class="btn btn-danger btn-flat center-block"  href="<?php echo base_url('master-data/delete_supir/').$key['id_supir']?>" onclick="return confirm('apakah ada ingin menghapus data?');">Hapus</a>
                           </td>
                         </tr>
                       <?php } ?>
@@ -58,8 +58,8 @@
                           <td><?php echo $no++; ?></td>
                           <td><?php echo $key['nama']?></td>
                           <td>
-                            <a class="btn btn-success btn-flat center-block" href="<?php echo base_url('admin/edit_jalan/').$key['id_jalan']?>">Edit</a>
-                            <a class="btn btn-danger btn-flat center-block"  href="<?php echo base_url('admin/delete_jalan/').$key['id_jalan']?>" onclick="return confirm('apakah ada ingin menghapus data?');">Hapus</a>
+                            <a class="btn btn-success btn-flat center-block" href="<?php echo base_url('master-data/edit_jalan/').$key['id_jalan']?>">Edit</a>
+                            <a class="btn btn-danger btn-flat center-block"  href="<?php echo base_url('master-data/delete_jalan/').$key['id_jalan']?>" onclick="return confirm('apakah ada ingin menghapus data?');">Hapus</a>
                           </td>
                         </tr>
                       <?php } ?>

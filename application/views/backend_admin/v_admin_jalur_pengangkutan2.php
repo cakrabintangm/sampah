@@ -45,7 +45,7 @@ function toColor($n) {
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="<?php echo base_url().'admin/index'?>" class="brand-link">
+    <a href="<?php echo base_url().'master-data/index'?>" class="brand-link">
       <span class="brand-text font-weight-light">SIM Sampah</span>
     </a>
 
@@ -56,7 +56,7 @@ function toColor($n) {
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item has-treeview">
-            <a href="<?php echo base_url().'admin/index'?>" class="nav-link ">
+            <a href="<?php echo base_url().'master-data/index'?>" class="nav-link ">
               <i class="nav-icon fas fa-home"></i>
               <p>
                 Beranda
@@ -74,7 +74,7 @@ function toColor($n) {
           </li>
           <ul>
             <li class="nav-item">
-            <a href="<?php echo base_url().'admin/jalur_pengangkutan'?>" class="nav-link">
+            <a href="<?php echo base_url().'master-data/jalur_pengangkutan'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
               <p>
                 Individu
@@ -82,7 +82,7 @@ function toColor($n) {
             </a>
             </li>
             <li class="nav-item">
-            <a href="<?php echo base_url().'admin/jalur_pengangkutan2'?>" class="nav-link">
+            <a href="<?php echo base_url().'master-data/jalur_pengangkutan2'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
               <p>
                 Kelompok
@@ -101,7 +101,7 @@ function toColor($n) {
           </li>
           <ul>
             <li class="nav-item">
-            <a href="<?php echo base_url().'admin/master_data'?>" class="nav-link">
+            <a href="<?php echo base_url().'master-data/master_data'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
               <p>
                 nambah titik
@@ -109,7 +109,7 @@ function toColor($n) {
             </a>
             </li>
             <li class="nav-item">
-            <a href="<?php echo base_url().'admin/antar_titik'?>" class="nav-link">
+            <a href="<?php echo base_url().'master-data/antar_titik'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
               <p>
                 nyambungkan titik
@@ -118,7 +118,7 @@ function toColor($n) {
             </li>
           </ul>
           <li class="nav-item">
-            <a href="<?php echo base_url().'admin/keluar'?>" class="nav-link">
+            <a href="<?php echo base_url().'user/logout'?>" class="nav-link">
               <i class="nav-icon fas fa-sign-out-alt"></i>
               <p>Keluar</p>
             </a>
@@ -155,7 +155,7 @@ function toColor($n) {
               <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                      <a href="<?=base_url('admin/jalur_pengangkutan2/generate')?>" class="btn btn-primary"> GENERATE</a>
+                      <a href="<?=base_url('master-data/jalur_pengangkutan2/generate')?>" class="btn btn-primary"> GENERATE</a>
                     </div>
                 </div>
               </div>

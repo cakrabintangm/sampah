@@ -40,7 +40,7 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="<?php echo base_url().'admin/index'?>" class="brand-link">
+    <a href="<?php echo base_url().'master-data/index'?>" class="brand-link">
       <span class="brand-text font-weight-light">SIM Sampah</span>
     </a>
 
@@ -51,7 +51,7 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item has-treeview">
-            <a href="<?php echo base_url().'admin/index'?>" class="nav-link ">
+            <a href="<?php echo base_url().'master-data/index'?>" class="nav-link ">
               <i class="nav-icon fas fa-home"></i>
               <p>
                 Beranda
@@ -78,7 +78,7 @@
           </li>
           <ul>
             <li class="nav-item">
-            <a href="<?php echo base_url().'admin/master_data'?>" class="nav-link">
+            <a href="<?php echo base_url().'master-data/master_data'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
               <p>
                 nambah titik
@@ -86,7 +86,7 @@
             </a>
             </li>
             <li class="nav-item">
-            <a href="<?php echo base_url().'admin/antar_titik'?>" class="nav-link">
+            <a href="<?php echo base_url().'master-data/antar_titik'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
               <p>
                 nyambungkan titik
@@ -95,7 +95,7 @@
             </li>
           </ul>
           <li class="nav-item">
-            <a href="<?php echo base_url().'admin/keluar'?>" class="nav-link">
+            <a href="<?php echo base_url().'user/logout'?>" class="nav-link">
               <i class="nav-icon fas fa-sign-out-alt"></i>
               <p>Keluar</p>
             </a>
@@ -145,7 +145,7 @@
                       </select>                        
                     </div>
                     
-                    <form style="display: block;" id="id_tps" action="<?=base_url('admin/proses_edit/'.$data[0]['id_tps'])?>" method='post'>
+                    <form style="display: block;" id="id_tps" action="<?=base_url('master-data/proses_edit/'.$data[0]['id_tps'])?>" method='post'>
                     <div class="row">
                       
                       <div class="col-sm-12">

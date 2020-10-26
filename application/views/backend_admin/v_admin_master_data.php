@@ -29,7 +29,7 @@
                       </select>                        
                     </div>
                     
-                    <form style="display: none;" id="id_tps" action="<?=base_url('admin/save_tps')?>" method='post'>
+                    <form style="display: none;" id="id_tps" action="<?=base_url('master-data/save_tps')?>" method='post'>
                     <div class="row">
                       
                       <div class="col-sm-12">
@@ -61,7 +61,7 @@
                     <br>
                     <button id="button" type="submit" class="btn btn-primary btn-flat center-block" id="simpan">Simpan</button></form>    
 
-                    <form style="display: none;" id="id_jalan" action="<?=base_url('admin/save_jalan')?>" method='post'>
+                    <form style="display: none;" id="id_jalan" action="<?=base_url('master-data/save_jalan')?>" method='post'>
                     <div class="row">
 
                       <div class="col-sm-12">
@@ -93,7 +93,7 @@
                     <br>
                     <button id="button" type="submit" class="btn btn-primary btn-flat center-block" id="simpan">Simpan</button></form>
 
-                    <form style="display: none;" id="id_supir" action="<?=base_url('admin/save_supir')?>" method='post'>
+                    <form style="display: none;" id="id_supir" action="<?=base_url('master-data/save_supir')?>" method='post'>
                     <div class="row">
                       <div class="col-sm-12">
                         <br>

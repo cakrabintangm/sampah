@@ -1,13 +1,13 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class admin extends CI_Controller {
+class Master_data extends CI_Controller {
 	function __construct() 
 	{
 		parent::__construct();
 //  jika belum login redirect ke login
 		if ($this->session->userdata('status')!= "admin"){
-		redirect('login');}
+		redirect('user');}
 		$this->load->model('model');
 		$this->load->model('metode');
 		$this->load->library('upload');
@@ -71,7 +71,7 @@ class admin extends CI_Controller {
 			'latitude' => $this->input->post('latitude_tps'),
 		);
 		$this->db->insert('tps',$data_tps);
-		redirect('admin/master_data');
+		redirect('master-data/master_data');
 	}
 	
 	public function save_jalan(){
@@ -89,7 +89,7 @@ class admin extends CI_Controller {
 			'latitude' => $this->input->post('latitude_jalan'), 
 		);
 	$this->db->insert('jalan',$data_jalan);
-	redirect('admin/master_data');
+	redirect('master-data/master_data');
 	}
 
 	public function save_supir(){
@@ -110,7 +110,7 @@ class admin extends CI_Controller {
 			'id_ang' => $this->input->post('jenis_angkutan'),
 		);
 		$this->db->insert('supir',$data_supir);
-		redirect('admin/master_data');
+		redirect('master-data/master_data');
 	}
 
 	public function save_antar_titik(){
@@ -125,20 +125,20 @@ class admin extends CI_Controller {
 			'muatan'	=> $this->input->post('muatan'),
 		);
 		$this->db->insert('antik',$data);
-		redirect('admin/antar_titik');
+		redirect('master-data/antar_titik');
 	}
 
 	public function ubah_antar_titik(){
 		$data['muatan'] = $this->input->post('muatan');
 		$where['id_antik'] = $this->input->post('id_antik');
 		$this->db->update('antik', $data, $where);
-		redirect('admin/antar_titik');
+		redirect('master-data/antar_titik');
 	}
 
 	public function hapus_antar_titik(){
 		$where['id_antik'] = $this->input->post('id_antik');
 		$this->db->delete('antik', $where);
-		redirect('admin/antar_titik');
+		redirect('master-data/antar_titik');
 	}
 
 	/*DATA JALAN*/
@@ -164,14 +164,14 @@ class admin extends CI_Controller {
 			'latitude' => $this->input->post('latitude_jalan'), 
 		);
 	$this->db->update('jalan',$data_jalan,$where);
-	redirect('admin/master_data');
+	redirect('master-data/master_data');
 	}
 
 	public function delete_jalan(){
 		$where['id_jalan']=$this->uri->segment(3);
 
 		$this->db->delete('jalan',$where);
-		redirect('admin/master_data');
+		redirect('master-data/master_data');
 	}
 	/*DATA TPS*/
 	public function edit_tps(){
@@ -194,14 +194,14 @@ class admin extends CI_Controller {
 			'latitude' => $this->input->post('latitude_tps'),
 		);
 		$this->db->update('tps',$data_tps,$where);
-		redirect('admin/master_data');
+		redirect('master-data/master_data');
 	}
 
 	public function delete_tps(){
 		$where['id_tps']=$this->uri->segment(3);
 
 		$this->db->delete('tps',$where);
-		redirect('admin/master_data');
+		redirect('master-data/master_data');
 	}
 	/*DATA SUPIR*/
 	public function edit_supir(){
@@ -225,14 +225,14 @@ class admin extends CI_Controller {
 			'id_ang' => $this->input->post('jenis_angkutan'),
 		);
 		$this->db->update('supir',$data_supir,$where);
-		redirect('admin/master_data');
+		redirect('master-data/master_data');
 	}
 
 	public function delete_supir(){
 		$where['id_supir']=$this->uri->segment(3);
 
 		$this->db->delete('supir',$where);
-		redirect('admin/master_data');
+		redirect('master-data/master_data');
 	}
 
 	// JALUR PENGANGKUTAN INDIVIDU

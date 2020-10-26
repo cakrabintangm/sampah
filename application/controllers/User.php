@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class login extends CI_Controller {
+class User extends CI_Controller {
 	function __construct(){
         parent::__construct();
         $this->load->model('model');
@@ -31,7 +31,7 @@ class login extends CI_Controller {
 				'status' 	=> "admin",
 				'siapa' 	=> $cek['nama_A']);
 			$this->session->set_userdata($data_session);
-				redirect('admin');
+				redirect('master-data');
 			}
 		else
 			{
@@ -42,7 +42,7 @@ class login extends CI_Controller {
 	function logout(){
 
 		$this->session->sess_destroy();
-		redirect('login');
+		redirect('user');
 	}
 
 }

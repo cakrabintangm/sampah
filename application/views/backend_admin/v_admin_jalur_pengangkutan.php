@@ -40,7 +40,7 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="<?php echo base_url().'admin/index'?>" class="brand-link">
+    <a href="<?php echo base_url().'master-data/index'?>" class="brand-link">
       <span class="brand-text font-weight-light">SIM Sampah</span>
     </a>
 
@@ -51,7 +51,7 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item has-treeview">
-            <a href="<?php echo base_url().'admin/index'?>" class="nav-link ">
+            <a href="<?php echo base_url().'master-data/index'?>" class="nav-link ">
               <i class="nav-icon fas fa-home"></i>
               <p>
                 Beranda
@@ -69,7 +69,7 @@
           </li>
           <ul>
             <li class="nav-item">
-            <a href="<?php echo base_url().'admin/jalur_pengangkutan'?>" class="nav-link">
+            <a href="<?php echo base_url().'master-data/jalur_pengangkutan'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
               <p>
                 Individu
@@ -77,7 +77,7 @@
             </a>
             </li>
             <li class="nav-item">
-            <a href="<?php echo base_url().'admin/jalur_pengangkutan2'?>" class="nav-link">
+            <a href="<?php echo base_url().'master-data/jalur_pengangkutan2'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
               <p>
                 Kelompok
@@ -96,7 +96,7 @@
           </li>
           <ul>
             <li class="nav-item">
-            <a href="<?php echo base_url().'admin/master_data'?>" class="nav-link">
+            <a href="<?php echo base_url().'master-data/master_data'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
               <p>
                 nambah titik
@@ -104,7 +104,7 @@
             </a>
             </li>
             <li class="nav-item">
-            <a href="<?php echo base_url().'admin/antar_titik'?>" class="nav-link">
+            <a href="<?php echo base_url().'master-data/antar_titik'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
               <p>
                 nyambungkan titik
@@ -113,7 +113,7 @@
             </li>
           </ul>
           <li class="nav-item">
-            <a href="<?php echo base_url().'admin/keluar'?>" class="nav-link">
+            <a href="<?php echo base_url().'user/logout'?>" class="nav-link">
               <i class="nav-icon fas fa-sign-out-alt"></i>
               <p>Keluar</p>
             </a>
@@ -150,7 +150,7 @@
               <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                      <form method="get" action="<?php echo base_url()?>admin/jalur_pengangkutan" class="form-horizontal">
+                      <form method="get" action="<?php echo base_url()?>master-data/jalur_pengangkutan" class="form-horizontal">
                         <div class="col-sm-12">
                           <label class="col-sm-4 control-label" id="latitude" >Nama Supir</label>
                           <select name="id_supir">
@@ -160,7 +160,7 @@
                           </select>
                           <button type="submit" class="btn btn-primary btn-flat">refresh</button>
                           <?php if(!empty($id_supir)){ ?>
-                          <a href="<?=base_url('coba/johnson/'.$id_supir)?>" target="_blank" class="btn btn-success btn-flat">debug</a>
+                          <a href="<?=base_url('jalur-pengangkutan/johnson/'.$id_supir)?>" target="_blank" class="btn btn-success btn-flat">debug</a>
                           <?php } ?>
                         </div>
                         

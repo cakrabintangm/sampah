@@ -22,7 +22,7 @@
                 <!-- /.row -->
               </div>
               <!-- ./card-body -->
-                   <form  action="<?=base_url('admin/save_antar_titik')?>" method='post'>
+                   <form  action="<?=base_url('master-data/save_antar_titik')?>" method='post'>
              <div class="row">
                <div class="col-md-6">
                    
@@ -137,7 +137,7 @@
                             </tr>
                           </table>
 
-                          <form action="<?=base_url('admin/ubah_antar_titik')?>" method="post" class="row">
+                          <form action="<?=base_url('master-data/ubah_antar_titik')?>" method="post" class="row">
                             <div class="col-md-6">
                               <input type="hidden" name="id_antik" class="modal_id">
                               <input type="number" step=".01" name="muatan" class="form-control" id="modal_muatan_ubah" value="0">
@@ -148,7 +148,7 @@
                           </form>
                         </div>
                         <div class="modal-footer">
-                          <form action="<?=base_url('admin/hapus_antar_titik')?>" method="post">
+                          <form action="<?=base_url('master-data/hapus_antar_titik')?>" method="post">
                             <input type="hidden" name="id_antik" class="modal_id">
                             <button type="submit" class="btn btn-danger">Hapus Path</button>
                           </form>

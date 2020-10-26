@@ -34,7 +34,7 @@
 	<div class="limiter">
 		<div class="container-login100" style="background-image: url('images/bg-01.jpg');">
 			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
-				<form class="login100-form validate-form" action="<?=base_url('login/cek')?>" method="post">
+				<form class="login100-form validate-form" action="<?=base_url('user/cek')?>" method="post">
 						<p><center><strong> Selamat Datang Di Sistem Informasi </strong></center></p>
 						<center><strong>Penentuan Jalur Sampah</strong></center>
 					<div class="wrap-input100 validate-input m-b-23" data-validate = "Username is reauired">
