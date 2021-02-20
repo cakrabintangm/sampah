@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Master_data extends CI_Controller {
+class master_data extends CI_Controller {
 	function __construct() 
 	{
 		parent::__construct();
@@ -51,6 +51,17 @@ class Master_data extends CI_Controller {
 			'data_antik' => $this->model->getAll('antik')
 		);
 		$this->load->view('layout_admin',$data);
+	}
+
+	public function getDistanceMatrix() {
+		$lat1 = $this->input->post("lat1");
+		$lon1 = $this->input->post("lon1");
+		$lat2 = $this->input->post("lat2");
+		$lon2 = $this->input->post("lon2");
+		$response = file_get_contents("https://maps.googleapis.com/maps/api/distancematrix/json?origins=".$lat1
+			.",".$lon1."&destinations=".$lat2.",".$lon2."&key=AIzaSyBc1wq4NssgXxRoF1g9jhP6xWYOOA_hOx8");
+		$result = json_decode($response);
+		echo $result->rows[0]->elements[0]->distance->value;
 	}
 
 	public function save_masterdata(){
@@ -122,6 +133,7 @@ class Master_data extends CI_Controller {
 			'titik_2_lat'	=> $this->input->post('lat2'),
 			'titik_2_long'	=> $this->input->post('long2'),
 			'jarak'		=> $this->input->post('jarak'),
+			'jarak_bellmanford'		=> $this->input->post('jarak'),
 			'muatan'	=> $this->input->post('muatan'),
 		);
 		$this->db->insert('antik',$data);
@@ -249,23 +261,11 @@ class Master_data extends CI_Controller {
 		$id_supir = $this->input->get('id_supir');
 		if(!empty($id_supir)){
 			$where['id_supir']=$id_supir;
-			$supir=$this->db->from('supir')->join('angkutan','angkutan.id_ang=supir.id_ang')->where($where)->get()->row();
-
-			// Simpang terdekat dari supir
-			$terdekat = $this->db->query('SELECT *, (6371 * 
-				acos(
-					cos(radians('.$supir->latitude.')) * 
-					cos(radians(latitude)) * 
-					cos(radians(longitude) - 
-					radians('.$supir->longitude.')) + 
-					sin(radians('.$supir->latitude.')) * 
-					sin(radians(latitude))
-				)
-			) AS distance from jalan WHERE id_jalan < 7001 HAVING distance < 10 ORDER BY distance ASC LIMIT 1')->result_array();
+			$supir=$this->db->from('supir')->join('angkutan','angkutan.id_ang=supir.id_ang')->where($where)->get()->row_array();
 
 		    // INISIALISASI
-		    $titik_awal = $terdekat[0]['id_jalan'];
-		    $muatan_maks = $supir->muatan;
+		    $titik_awal = $this->terdekat($supir);
+		    $muatan_maks = $supir['muatan'];
 		    $AT = array();
 		    $RUTE = array();
 
@@ -273,7 +273,7 @@ class Master_data extends CI_Controller {
 			$edge = $this->db->query('SELECT DISTINCT titik_1 AS titik from antik UNION SELECT DISTINCT titik_2 from antik ORDER BY titik')->result_array();
 
 		    // ANTAR TITIK
-		    $antik = $this->db->query('SELECT titik_1, titik_2, jarak_bellmanford, muatan FROM antik GROUP BY titik_1, titik_2 UNION SELECT titik_2, titik_1, jarak, muatan FROM antik GROUP BY titik_1, titik_2')->result_array();
+		    $antik = $this->db->query('SELECT titik_1, titik_2, jarak_bellmanford, muatan FROM antik GROUP BY titik_1, titik_2 UNION SELECT titik_2, titik_1, jarak_bellmanford, muatan FROM antik GROUP BY titik_1, titik_2')->result_array();
 
 			foreach($edge as $edg){
 				$titik = $edg['titik'];
@@ -361,7 +361,14 @@ class Master_data extends CI_Controller {
 				for ($i=0; $i < count($rt)-1; $i++) {
 					$data['ruteStr'][] = $this->db->query('SELECT nama as nama_titik FROM jalan WHERE id_jalan='.$rt[$i].' UNION SELECT nm_supir FROM supir WHERE id_supir='.$rt[$i].' UNION SELECT nm_tps FROM tps WHERE id_tps='.$rt[$i])->row()->nama_titik;
 
-					$data['ruteArr'][] = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[$i].' AND titik_2='.$rt[$i+1].') OR (titik_1='.$rt[$i+1].' AND titik_2='.$rt[$i].')')->row_array();
+					$get_rute = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[$i].' AND titik_2='.$rt[$i+1].')')->row_array();
+					if ($get_rute) {
+						$get_rute['type'] = 1;
+					} else {
+						$get_rute = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[$i+1].' AND titik_2='.$rt[$i].')')->row_array();
+						$get_rute['type'] = 2;
+					}
+					$data['ruteArr'][] = $get_rute;
 				}
 			}
 			$data['ruteStr'][] = $this->db->query('SELECT nama as nama_titik FROM jalan WHERE id_jalan='.$rt[count($rt)-1].' UNION SELECT nm_supir FROM supir WHERE id_supir='.$rt[count($rt)-1].' UNION SELECT nm_tps FROM tps WHERE id_tps='.$rt[count($rt)-1])->row()->nama_titik;
@@ -393,23 +400,11 @@ class Master_data extends CI_Controller {
 
 			// Loop semua supir
 			$semua_supir = $this->db->from('supir')->join('angkutan','angkutan.id_ang=supir.id_ang')->get()->result_array();
-			$titik_used_ids = array();
-			foreach($semua_supir as $key => $supir){
-				
-				// Simpang terdekat dari supir
-				$terdekat = $this->db->query('SELECT *, (6371 * 
-					acos(
-						cos(radians('.$supir['latitude'].')) * 
-						cos(radians(latitude)) * 
-						cos(radians(longitude) - 
-						radians('.$supir['longitude'].')) + 
-						sin(radians('.$supir['latitude'].')) * 
-						sin(radians(latitude))
-					)
-				) AS distance from jalan WHERE id_jalan < 7001 OR id_jalan > 7005 HAVING distance < 10 ORDER BY distance ASC LIMIT 1')->result_array();
+
+			foreach($semua_supir as $supir){
 
 			    // INISIALISASI
-			    $titik_awal = $terdekat[0]['id_jalan'];
+			    $titik_awal = $this->terdekat($supir);
 			    $muatan_maks = $supir['muatan'];
 			    $AT = array();
 			    $RUTE = array();
@@ -417,10 +412,8 @@ class Master_data extends CI_Controller {
 				// TITIK
 				$edge = $this->db->query('SELECT DISTINCT titik_1 AS titik from antik_metode UNION SELECT DISTINCT titik_2 from antik_metode ORDER BY titik')->result_array();
 
-
 			    // ANTAR TITIK
-			    $antik = $this->db->query('SELECT titik_1, titik_2, jarak_bellmanford, muatan FROM antik_metode GROUP BY titik_1, titik_2 UNION SELECT titik_2, titik_1, jarak, muatan FROM antik_metode GROUP BY titik_1, titik_2')->result_array();
-			    
+			    $antik = $this->db->query('SELECT titik_1, titik_2, jarak_bellmanford, muatan FROM antik_metode GROUP BY titik_1, titik_2 UNION SELECT titik_2, titik_1, jarak_bellmanford, muatan FROM antik_metode GROUP BY titik_1, titik_2')->result_array();
 
 				foreach($edge as $edg){
 					$titik = $edg['titik'];
@@ -432,25 +425,9 @@ class Master_data extends CI_Controller {
 
 				// PATH PER TITIK
 				foreach($antik as $atk){
-					if (isset($titik_used_ids) && !empty($titik_used_ids)){
-						foreach($titik_used_ids as $useds){
-							if($useds['from']==$atk['titik_1'] && $useds['to']==$atk['titik_2'] )
-								break;
-							else{
-								if($useds['from']!=$atk['titik_1'] && $useds['to']!=$atk['titik_2']){
-									$AT[$atk['titik_1']][] = array('titik_2'=>$atk['titik_2'],
+					$AT[$atk['titik_1']][] = array('titik_2'=>$atk['titik_2'],
 													'jarak'=>$atk['jarak_bellmanford'],
 													'muatan'=>$atk['muatan']);
-									break;
-								}
-							}
-						}
-					}
-					else{
-						$AT[$atk['titik_1']][] = array('titik_2'=>$atk['titik_2'],
-													'jarak'=>$atk['jarak_bellmanford'],
-													'muatan'=>$atk['muatan']);
-					}
 				}
 
 				// ANTRIAN PRIORITAS PATH
@@ -464,23 +441,37 @@ class Master_data extends CI_Controller {
 				// URUTKAN SESUAI JARAK DARI YANG TERPENDEK
 				usort($pq, function($a, $b){return $a['distance']-$b['distance'];});
 
+				$isMaxLoadMeet = false;
+
 				// MAIN LOOP DIJKSTRA
 				while(!empty($pq)){
 
 					$top = array_shift($pq); // ambil rute paling atas dan hapus dari antrian prioritas
-					
 					$from = $top['from'];
-					if($RUTE[$from]['muatan'] > $muatan_maks) break; // stop jika muatan sudah berlebih
+					if($RUTE[$from]['muatan'] > $muatan_maks){
+						$isMaxLoadMeet = true;
+						break; // stop jika muatan sudah berlebih
+					}
+
+					$TEMP_AT = array();
+					foreach($AT[$from] as $tjm){
+						if($tjm['muatan'] > 0) $TEMP_AT[] = $tjm;
+					}
+					if(count($TEMP_AT)==0) $TEMP_AT = $AT[$from];
 
 					// LOOP SEMUA EDGE DARI PATH $from
-					foreach($AT[$from] as $tjm){
+					// foreach($AT[$from] as $tjm){
+					foreach($TEMP_AT as $tjm){
 						$t=$tjm['titik_2'];
 						$j=$tjm['jarak'];
 						$m=$tjm['muatan'];
-						if(!in_array($t, array_column($pq, 'from'))) continue;
+						if(!in_array($t, array_column($pq, 'from'))) continue; // skip jika titik telah dihapus dari antrian pq
 
-						if($RUTE[$from]['distance']+$j >= $RUTE[$t]['distance']) continue; // skip jika jarak tidak lebih pendek
-						if($RUTE[$from]['muatan']+$m > $muatan_maks) continue; // skip jika muatan sudah berlebih
+						if($RUTE[$from]['distance']+$j >= $RUTE[$t]['distance']) continue; // skip jika jarak tidak lebih pendek  AND $m > 0
+						if($RUTE[$from]['muatan']+$m > $muatan_maks){
+							$isMaxLoadMeet = true;
+							continue; // skip jika muatan sudah berlebih
+						}
 
 		      			// info rute yang lama
 						$old = array('distance'=>$RUTE[$t]['distance'],
@@ -498,7 +489,6 @@ class Master_data extends CI_Controller {
 						$pq[] = array('distance'=>$RUTE[$t]['distance'],
 										'from'=>$t,
 										'muatan'=>$RUTE[$t]['muatan']);
-						$titik_used_ids[] = array('from' => $from, 'to'=>$t);
 						// urutkan kembali dari yang terpendek
 						usort($pq, function($a, $b){return $a['distance']-$b['distance'];});
 					}
@@ -517,8 +507,6 @@ class Master_data extends CI_Controller {
 				$rute_terpilih = array_values($RUTE)[0];
 				$dt = array();
 				$dt['supir'] = $supir;
-				$dt['distance'] = $rute_terpilih['distance'];
-				$dt['muatan'] = $rute_terpilih['muatan'];
 				$dt['ruteStr'] = array();
 				$dt['ruteArr'] = array();
 
@@ -528,7 +516,13 @@ class Master_data extends CI_Controller {
 					for ($i=0; $i < count($rt)-1; $i++) {
 						$dt['ruteStr'][] = $this->db->query('SELECT nama as nama_titik FROM jalan WHERE id_jalan='.$rt[$i].' UNION SELECT nm_supir FROM supir WHERE id_supir='.$rt[$i].' UNION SELECT nm_tps FROM tps WHERE id_tps='.$rt[$i])->row_array()['nama_titik'];
 
-						$get_rute = $this->db->query('SELECT * FROM antik_metode WHERE (titik_1='.$rt[$i].' AND titik_2='.$rt[$i+1].') OR (titik_1='.$rt[$i+1].' AND titik_2='.$rt[$i].')')->row_array();
+						$get_rute = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[$i].' AND titik_2='.$rt[$i+1].')')->row_array();
+						if ($get_rute) {
+							$get_rute['type'] = 1;
+						} else {
+							$get_rute = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[$i+1].' AND titik_2='.$rt[$i].')')->row_array();
+							$get_rute['type'] = 2;
+						}
 						$dt['ruteArr'][] = $get_rute;
 
 						// kosongkan muatan rute telah dilewati
@@ -536,11 +530,159 @@ class Master_data extends CI_Controller {
 					}
 					$this->db->update_batch('antik_metode', $kosongkan, 'id_antik');
 					$dt['ruteAkhir'] = $this->db->where('id_jalan', $rt[count($rt)-1])->get('jalan')->row_array();
+
+					// rute terakhir
+					$dt['ruteStr'][] = $this->db->query('SELECT nama as nama_titik, longitude, latitude FROM jalan WHERE id_jalan='.$rt[count($rt)-1].' UNION SELECT nm_supir, longitude, latitude FROM supir WHERE id_supir='.$rt[count($rt)-1].' UNION SELECT nm_tps, longitude, latitude FROM tps WHERE id_tps='.$rt[count($rt)-1])->row_array()['nama_titik'];
 				}
 
-				// rute terakhir
-				$dt['ruteStr'][] = $this->db->query('SELECT nama as nama_titik, longitude, latitude FROM jalan WHERE id_jalan='.$rt[count($rt)-1].' UNION SELECT nm_supir, longitude, latitude FROM supir WHERE id_supir='.$rt[count($rt)-1].' UNION SELECT nm_tps, longitude, latitude FROM tps WHERE id_tps='.$rt[count($rt)-1])->row_array()['nama_titik'];
+				/* n-th path searching */
 
+				$maxIter = 0;
+
+				while(!$isMaxLoadMeet && $maxIter<3){
+				// if(false){
+					$maxIter++;
+					$titik_akhir = end($rt);
+
+					$AT2 = array();
+			    	$RUTE2 = array();
+					// ANTAR TITIK
+				    $antik2 = $this->db->query('SELECT titik_1, titik_2, jarak_bellmanford, muatan FROM antik_metode GROUP BY titik_1, titik_2 UNION SELECT titik_2, titik_1, jarak_bellmanford, muatan FROM antik_metode GROUP BY titik_1, titik_2')->result_array();
+
+					foreach($edge as $edg){
+						$titik = $edg['titik'];
+						$AT2[$titik] = array();
+						$RUTE2[$titik] = array('distance'=>1000000000, 'muatan'=>$rute_terpilih['muatan'], 'rute'=>"");
+					}
+
+					$RUTE2[$titik_akhir] = array('distance'=>0, 'muatan'=>$rute_terpilih['muatan'], 'rute'=>"".$titik_akhir);
+
+					// PATH PER TITIK
+					foreach($antik2 as $atk){
+						$AT2[$atk['titik_1']][] = array('titik_2'=>$atk['titik_2'],
+														'jarak'=>$atk['jarak_bellmanford'],
+														'muatan'=>$atk['muatan']);
+					}
+
+					// ANTRIAN PRIORITAS PATH
+				    $pq2 = array();
+				    foreach($edge as $edg){
+				    	$titik = $edg['titik'];
+						$pq2[] = array('distance'=>$RUTE2[$titik]['distance'],
+										'from'=>$titik,
+										'muatan'=>$RUTE2[$titik]['muatan']);
+					}
+					// URUTKAN SESUAI JARAK DARI YANG TERPENDEK
+					usort($pq2, function($a, $b){return $a['distance']-$b['distance'];});
+
+					while(!empty($pq2)){
+
+						$top = array_shift($pq2); // ambil rute paling atas dan hapus dari antrian prioritas
+						$from = $top['from'];
+						if($RUTE2[$from]['muatan'] > $muatan_maks){
+							$isMaxLoadMeet = true;
+							break; // stop jika muatan sudah berlebih
+						}
+
+						$TEMP_AT = array();
+						foreach($AT2[$from] as $tjm){
+							if($tjm['muatan'] > 0) $TEMP_AT[] = $tjm;
+						}
+						if(count($TEMP_AT)==0) $TEMP_AT = $AT2[$from];
+
+						// LOOP SEMUA EDGE DARI PATH $from
+						// foreach($AT[$from] as $tjm){
+						foreach($TEMP_AT as $tjm){
+							$t=$tjm['titik_2'];
+							$j=$tjm['jarak'];
+							$m=$tjm['muatan'];
+							if(count($TEMP_AT)>1 && in_array($t, $rt)) continue;
+							if(!in_array($t, array_column($pq2, 'from'))) continue; // skip jika titik telah dihapus dari antrian pq
+							if($RUTE2[$from]['distance']+$j >= $RUTE2[$t]['distance']) continue; // skip jika jarak tidak lebih pendek
+							if($RUTE2[$from]['muatan']+$m > $muatan_maks){
+								$isMaxLoadMeet = true;
+								continue; // skip jika muatan sudah berlebih
+							}
+
+			      			// info rute yang lama
+							$old = array('distance'=>$RUTE2[$t]['distance'],
+											'from'=>$t,
+											'muatan'=>$RUTE2[$t]['muatan']);
+			      			if (($key = array_search($old, $pq2)) !== false) {
+							    unset($pq2[$key]); // hapus info rute yang lama
+							}
+
+							$RUTE2[$t]['distance'] = $RUTE2[$from]['distance']+$j; // perbarui jarak baru
+							$RUTE2[$t]['muatan'] = $RUTE2[$from]['muatan']+$m; // perbarui muatan baru
+							$RUTE2[$t]['rute'] = $RUTE2[$from]['rute']."-".$t; // perbarui urutan rute baru
+
+							// tambah info rute yang baru
+							$pq2[] = array('distance'=>$RUTE2[$t]['distance'],
+											'from'=>$t,
+											'muatan'=>$RUTE2[$t]['muatan']);
+							// urutkan kembali dari yang terpendek
+							usort($pq2, function($a, $b){return $a['distance']-$b['distance'];});
+						}
+					}
+
+					// urutkan hasil
+					uasort($RUTE2, function($a, $b){
+						if($a['muatan']!=$b['muatan']){
+							return $a['muatan'] < $b['muatan'] ? 1 : -1; 	// berdasar muatan terbanyak yang dapat ditampung
+						}else{ 												// jika muatan sama berdasar jarak terpendek
+							if($a['distance']==$b['distance']) return 0;
+							return $a['distance'] > $b['distance'] ? 1 : -1;
+						}
+					});
+
+					$rtd = $rute_terpilih['distance'];
+					$rrt = $rute_terpilih['rute'];
+					$rute_terpilih = array_values($RUTE2)[0];
+
+					$rt = explode('-', $rute_terpilih['rute']);
+					if(count($rt)>1){
+						$get_rute = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[0].' AND titik_2='.$rt[1].')')->row_array();
+						if ($get_rute) {
+							$get_rute['type'] = 1;
+						} else {
+							$get_rute = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[1].' AND titik_2='.$rt[0].')')->row_array();
+							$get_rute['type'] = 2;
+						}
+						$dt['ruteArr'][] = $get_rute;
+						$kosongkan[] = array('id_antik'=>$get_rute['id_antik'], 'muatan'=>0);
+
+						for ($i=1; $i < count($rt)-1; $i++) {
+							$dt['ruteStr'][] = $this->db->query('SELECT nama as nama_titik FROM jalan WHERE id_jalan='.$rt[$i].' UNION SELECT nm_supir FROM supir WHERE id_supir='.$rt[$i].' UNION SELECT nm_tps FROM tps WHERE id_tps='.$rt[$i])->row_array()['nama_titik'];
+
+							$get_rute = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[$i].' AND titik_2='.$rt[$i+1].')')->row_array();
+							if ($get_rute) {
+								$get_rute['type'] = 1;
+							} else {
+								$get_rute = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[$i+1].' AND titik_2='.$rt[$i].')')->row_array();
+								$get_rute['type'] = 2;
+							}
+							$dt['ruteArr'][] = $get_rute;
+
+							// kosongkan muatan rute telah dilewati
+							$kosongkan[] = array('id_antik'=>$get_rute['id_antik'], 'muatan'=>0);
+						}
+
+						$this->db->update_batch('antik_metode', $kosongkan, 'id_antik');
+						$dt['ruteAkhir'] = $this->db->where('id_jalan', $rt[count($rt)-1])->get('jalan')->row_array();
+
+						// rute terakhir
+						$dt['ruteStr'][] = $this->db->query('SELECT nama as nama_titik, longitude, latitude FROM jalan WHERE id_jalan='.$rt[count($rt)-1].' UNION SELECT nm_supir, longitude, latitude FROM supir WHERE id_supir='.$rt[count($rt)-1].' UNION SELECT nm_tps, longitude, latitude FROM tps WHERE id_tps='.$rt[count($rt)-1])->row_array()['nama_titik'];
+					}
+
+					$rute_terpilih['distance'] += $rtd;
+					$rute_terpilih['rute'] = $rrt."-".$rute_terpilih['rute'];
+					
+				}
+
+				/* end of n-th path searching */
+
+				$dt['distance'] = $rute_terpilih['distance'];
+				$dt['muatan'] = $rute_terpilih['muatan'];
 				// tps terdekat
 				$dt['tps'] = $this->db->query('SELECT *, (6371 * 
 					acos(
@@ -562,8 +704,23 @@ class Master_data extends CI_Controller {
 		$this->load->view('backend_admin/v_admin_jalur_pengangkutan2',$data);
 	}
 
-	function ulang(){
-		
+	function terdekat($supir){
+		// Simpang terdekat dari supir
+		$terdekat = $this->db->query('SELECT *, (6371 * 
+			acos(
+				cos(radians('.$supir['latitude'].')) * 
+				cos(radians(latitude)) * 
+				cos(radians(longitude) - 
+				radians('.$supir['longitude'].')) + 
+				sin(radians('.$supir['latitude'].')) * 
+				sin(radians(latitude))
+			)
+		) AS distance from jalan WHERE id_jalan < 7001 OR id_jalan > 7005 HAVING distance < 10 ORDER BY distance ASC LIMIT 1')->result_array();
+
+		return $terdekat[0]['id_jalan'];
 	}
 
+	function jalur_sopir($supir){
+
+	}
 }

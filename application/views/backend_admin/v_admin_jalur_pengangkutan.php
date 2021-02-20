@@ -68,14 +68,14 @@
             </a>
           </li>
           <ul>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
             <a href="<?php echo base_url().'master-data/jalur_pengangkutan'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
               <p>
                 Individu
               </p>
             </a>
-            </li>
+            </li> -->
             <li class="nav-item">
             <a href="<?php echo base_url().'master-data/jalur_pengangkutan2'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
@@ -184,8 +184,13 @@
                       <tbody>
                         <?php foreach($ruteArr as $rta){ ?>
                         <tr>
+                          <?php if($rta['type']==1){ ?>
                           <td><?=$rta['titik_1'].' - '.$this->db->query('SELECT nama as nama_titik FROM jalan WHERE id_jalan='.$rta['titik_1'].' UNION SELECT nm_supir FROM supir WHERE id_supir='.$rta['titik_1'].' UNION SELECT nm_tps FROM tps WHERE id_tps='.$rta['titik_1'])->row()->nama_titik?></td>
                           <td><?=$rta['titik_2'].' - '.$this->db->query('SELECT nama as nama_titik FROM jalan WHERE id_jalan='.$rta['titik_2'].' UNION SELECT nm_supir FROM supir WHERE id_supir='.$rta['titik_2'].' UNION SELECT nm_tps FROM tps WHERE id_tps='.$rta['titik_2'])->row()->nama_titik?></td>
+                          <?php } else { ?>
+                          <td><?=$rta['titik_2'].' - '.$this->db->query('SELECT nama as nama_titik FROM jalan WHERE id_jalan='.$rta['titik_2'].' UNION SELECT nm_supir FROM supir WHERE id_supir='.$rta['titik_2'].' UNION SELECT nm_tps FROM tps WHERE id_tps='.$rta['titik_2'])->row()->nama_titik?></td>
+                          <td><?=$rta['titik_1'].' - '.$this->db->query('SELECT nama as nama_titik FROM jalan WHERE id_jalan='.$rta['titik_1'].' UNION SELECT nm_supir FROM supir WHERE id_supir='.$rta['titik_1'].' UNION SELECT nm_tps FROM tps WHERE id_tps='.$rta['titik_1'])->row()->nama_titik?></td>
+                          <?php } ?>
                           <td><?=$rta['jarak']?></td>
                           <td><?=$rta['muatan']?></td>
                         </tr>

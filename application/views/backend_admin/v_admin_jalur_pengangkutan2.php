@@ -73,14 +73,14 @@ function toColor($n) {
             </a>
           </li>
           <ul>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
             <a href="<?php echo base_url().'master-data/jalur_pengangkutan'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
               <p>
                 Individu
               </p>
             </a>
-            </li>
+            </li> -->
             <li class="nav-item">
             <a href="<?php echo base_url().'master-data/jalur_pengangkutan2'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
@@ -165,7 +165,7 @@ function toColor($n) {
             <!-- /.card -->
 
             <!-- Card Peta Kelompok -->
-            <div class="card">
+            <!-- <div class="card">
               <div class="card-header">
                 <h5 class="card-title"><a data-toggle="collapse" href="#collapse-kelompok">Peta Kelompok</a></h5>
               </div>
@@ -179,7 +179,7 @@ function toColor($n) {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <?php if(!empty($supir)){ 
               foreach($supir as $row){ ?>
@@ -193,8 +193,8 @@ function toColor($n) {
                 <div class="card-body">
                   <div class="row">
                     <div class="col-md-10">
-                      <h6><strong>Jarak tempuh total :</strong> <?=$row['distance']?></h6>
-                      <h6><strong>Muatan total :</strong> <?=$row['muatan']?></h6>
+                      <h6><strong>Jarak tempuh total :</strong> <?=$row['distance']?> m</h6>
+                      <h6><strong>Muatan total :</strong> <?=$row['muatan']?> m<sup>3</sup></h6>
                       <h6><strong>Rute :</strong> <?=implode(' -- ', $row['ruteStr'])?></h6>
                       <h6><strong>TPS :</strong> <?=$row['tps']['nm_tps']?></h6>
                     </div>
@@ -206,16 +206,21 @@ function toColor($n) {
                     <thead>
                       <th>Titik 1</th>
                       <th>Titik 2</th>
-                      <th>Jarak</th>
-                      <th>Muatan</th>
+                      <th>Jarak (m)</th>
+                      <th>Muatan (m<sup>3</sup>)</th>
                     </thead>
                     <tbody>
                       <?php foreach($row['ruteArr'] as $rta){ ?>
                       <tr>
+                        <?php if($rta['type']==1){ ?>
                         <td><?=$rta['titik_1'].' - '.$this->db->query('SELECT nama as nama_titik FROM jalan WHERE id_jalan='.$rta['titik_1'].' UNION SELECT nm_supir FROM supir WHERE id_supir='.$rta['titik_1'].' UNION SELECT nm_tps FROM tps WHERE id_tps='.$rta['titik_1'])->row()->nama_titik?></td>
                         <td><?=$rta['titik_2'].' - '.$this->db->query('SELECT nama as nama_titik FROM jalan WHERE id_jalan='.$rta['titik_2'].' UNION SELECT nm_supir FROM supir WHERE id_supir='.$rta['titik_2'].' UNION SELECT nm_tps FROM tps WHERE id_tps='.$rta['titik_2'])->row()->nama_titik?></td>
-                        <td><?=$rta['jarak']?></td>
-                        <td><?=$rta['muatan']?></td>
+                        <?php } else { ?>
+                        <td><?=$rta['titik_2'].' - '.$this->db->query('SELECT nama as nama_titik FROM jalan WHERE id_jalan='.$rta['titik_2'].' UNION SELECT nm_supir FROM supir WHERE id_supir='.$rta['titik_2'].' UNION SELECT nm_tps FROM tps WHERE id_tps='.$rta['titik_2'])->row()->nama_titik?></td>
+                        <td><?=$rta['titik_1'].' - '.$this->db->query('SELECT nama as nama_titik FROM jalan WHERE id_jalan='.$rta['titik_1'].' UNION SELECT nm_supir FROM supir WHERE id_supir='.$rta['titik_1'].' UNION SELECT nm_tps FROM tps WHERE id_tps='.$rta['titik_1'])->row()->nama_titik?></td>
+                        <?php } ?>
+                        <td><?=$rta['jarak']?> m</td>
+                        <td><?=$rta['muatan']?> m<sup>3</sup></td>
                       </tr>
                       <?php } ?>
                     </tbody>

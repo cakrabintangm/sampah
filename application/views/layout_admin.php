@@ -81,7 +81,7 @@
             <a href="<?php echo base_url().'master-data/master_data'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
               <p>
-                nambah titik
+                Tambah titik
               </p>
             </a>
             </li>
@@ -89,7 +89,7 @@
             <a href="<?php echo base_url().'master-data/antar_titik'?>" class="nav-link">
               <i class="nav-icon fas fa-map"></i>
               <p>
-                nyambungkan titik
+                Antar titik
               </p>
             </a>
             </li>

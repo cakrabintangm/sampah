@@ -92,17 +92,31 @@ var x=0;
             var lon2 = document.getElementById("long2").value; // koordinat longitude cikarang
             var R = 6371;
            if(lat1 && lon1 && lat2 && lon2){
-              var lat1rad = lat1*Math.PI/180;
-              var lat2rad = lat2*Math.PI/180;
-              var tatac = (lat2-lat1)*Math.PI/180;
-              var lontac = (lon2-lon1)*Math.PI/180;
-              var a = Math.sin(tatac/2) * Math.sin(tatac/2) +
-                        Math.cos(lat1rad) * Math.cos(lat2rad) *
-                        Math.sin(lontac/2) * Math.sin(lontac/2);
-              var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+              // var lat1rad = lat1*Math.PI/180;
+              // var lat2rad = lat2*Math.PI/180;
+              // var tatac = (lat2-lat1)*Math.PI/180;
+              // var lontac = (lon2-lon1)*Math.PI/180;
+              // var a = Math.sin(tatac/2) * Math.sin(tatac/2) +
+              //           Math.cos(lat1rad) * Math.cos(lat2rad) *
+              //           Math.sin(lontac/2) * Math.sin(lontac/2);
+              // var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-              var d = Math.round(R * c*1000);
-              document.getElementById("jarak_antar_titik").value=d;
+              // var d = Math.round(R * c*1000);
+              $.ajax({
+                url: "<?=base_url('master-data/getdistancematrix')?>",
+                type: "post",
+                datatype: "html",
+                data: {lat1:lat1, lon1:lon1, lat2:lat2, lon2:lon2},
+                success: function (response) {
+                  //var data = JSON.parse(response)
+                  console.log(response);
+                  document.getElementById("jarak_antar_titik").value=response;
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                  console.log(textStatus, errorThrown);
+                }
+              });
+              // document.getElementById("jarak_antar_titik").value=d;
             }
 
           });

@@ -53,7 +53,7 @@
                       </div>
                       <div class="col-sm-12">
                         <br>
-                        <label class="col-sm-4 control-label">Muatan</label>
+                        <label class="col-sm-4 control-label">Muatan (m<sup>3</sup>)</label>
                         <input  type="number" step=".01" id="" name="muatan" class="form-control" placeholder="Muatan" >
                       </div>
                       <br>
@@ -92,10 +92,12 @@
                       </div>
                       <div class="col-sm-12">
                         <br>
-                        <label class="col-sm-4 control-label">Jarak</label>
+                        <label class="col-sm-4 control-label">Jarak (m)</label>
                         <input  type="number" step=".01" id="jarak_antar_titik" name="jarak" class="form-control" placeholder="Jarak" >
                       </div>
                       <br>
+
+                      <p id="abcdefg"></p>
                       
                       <div class="col-sm-12">
                         <button type="submit" class="btn btn-primary btn-flat center-block" id="simpan">Simpan</button>
@@ -132,8 +134,8 @@
                               <td>Longitude : <strong id="modal_lng2"></strong></td>
                             </tr>
                             <tr>
-                              <td>Jarak : <strong id="modal_jarak"></strong></td>
-                              <td>Muatan : <strong id="modal_muatan"></strong></td>
+                              <td>Jarak : <strong id="modal_jarak"></strong> m</td>
+                              <td>Muatan : <strong id="modal_muatan"></strong> (m<sup>3</sup>)</td>
                             </tr>
                           </table>
 

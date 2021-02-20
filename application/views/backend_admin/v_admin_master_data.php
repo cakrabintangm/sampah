@@ -15,7 +15,8 @@
                     <div id="legend" class="panel panel-primary" style="background: white; padding: 10px;">
                         <div class="panel-heading">Keterangan Ikon</div>
                     </div>
-                    <div id="map" style="width:100%;height:400px;"></div>
+                    <div id="map" style="width:100%;height:400px;"></div><br/>
+                    <p class="text-muted">Klik icon untuk mengubah atau menghapus data</p>
                   </div>
                   <div class="col-md-4">
                     
@@ -70,12 +71,6 @@
                         <input  type="text" id="latitude_jalan" name="latitude_jalan" class="form-control" placeholder="latitude">
                       </div>
 
-                       <div class="col-sm-12">
-                        <br>
-                        <label class="col-sm-4 control-label" id="latitude" >Nama</label>
-                        <input  type="text"  name="nama" class="form-control" placeholder="Nama">
-                      </div>
-
                       <div class="col-sm-12">
                         <br>
                         <label class="col-sm-4 control-label" id="longitude" >Longitude</label>
@@ -86,6 +81,12 @@
                         <br>
                         <label  id="label_alamat" class="col-sm-4 control-label">Alamat</label>
                         <input  type="text" id="alamat_jalan" name="alamat_jalan" class="form-control" placeholder="Alamat" >
+                      </div>
+
+                      <div class="col-sm-12">
+                        <br>
+                        <label class="col-sm-4 control-label" id="latitude" >Nama Jalan</label>
+                        <input  type="text"  name="nama" class="form-control" placeholder="Nama Jalan">
                       </div>
                       <br>
 
