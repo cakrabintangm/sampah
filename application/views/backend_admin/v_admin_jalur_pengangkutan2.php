@@ -154,9 +154,14 @@ function toColor($n) {
               <!-- /.card-header -->
               <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-10">
                       <a href="<?=base_url('master-data/jalur_pengangkutan2/generate')?>" class="btn btn-primary"> GENERATE</a>
                     </div>
+                    <?php if($this->uri->segment(3) != null) {?>
+                    <div class="col-md-2">
+                      <a target="_blank" href="<?=base_url('jalur_pengangkutan/kelompok')?>" class="btn btn-primary"> LIHAT MANUAL</a>
+                    </div>
+                    <?php } ?>
                 </div>
               </div>
               <!-- ./card-body -->

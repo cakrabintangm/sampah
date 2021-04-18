@@ -315,7 +315,7 @@ class master_data extends CI_Controller {
 					$m=$tjm['muatan'];
 					if(!in_array($t, array_column($pq, 'from'))) continue;
 
-					if($RUTE[$from]['distance']+$j >= $RUTE[$t]['distance']) continue; // skip jika jarak tidak lebih pendek
+					//if($RUTE[$from]['distance']+$j >= $RUTE[$t]['distance']) continue; // skip jika jarak tidak lebih pendek
 					if($RUTE[$from]['muatan']+$m > $muatan_maks) continue; // skip jika muatan sudah berlebih
 
 	      			// info rute yang lama
@@ -399,7 +399,9 @@ class master_data extends CI_Controller {
 			$this->db->query('INSERT INTO antik_metode SELECT * FROM antik');
 
 			// Loop semua supir
-			$semua_supir = $this->db->from('supir')->join('angkutan','angkutan.id_ang=supir.id_ang')->get()->result_array();
+			$semua_supir = $this->db->from('supir')->join('angkutan','angkutan.id_ang=supir.id_ang')
+				->where("id_supir<1013")
+				->get()->result_array();
 
 			foreach($semua_supir as $supir){
 
@@ -467,7 +469,7 @@ class master_data extends CI_Controller {
 						$m=$tjm['muatan'];
 						if(!in_array($t, array_column($pq, 'from'))) continue; // skip jika titik telah dihapus dari antrian pq
 
-						if($RUTE[$from]['distance']+$j >= $RUTE[$t]['distance']) continue; // skip jika jarak tidak lebih pendek  AND $m > 0
+						//if($RUTE[$from]['distance']+$j >= $RUTE[$t]['distance']) continue; // skip jika jarak tidak lebih pendek  AND $m > 0
 						if($RUTE[$from]['muatan']+$m > $muatan_maks){
 							$isMaxLoadMeet = true;
 							continue; // skip jika muatan sudah berlebih
@@ -516,11 +518,11 @@ class master_data extends CI_Controller {
 					for ($i=0; $i < count($rt)-1; $i++) {
 						$dt['ruteStr'][] = $this->db->query('SELECT nama as nama_titik FROM jalan WHERE id_jalan='.$rt[$i].' UNION SELECT nm_supir FROM supir WHERE id_supir='.$rt[$i].' UNION SELECT nm_tps FROM tps WHERE id_tps='.$rt[$i])->row_array()['nama_titik'];
 
-						$get_rute = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[$i].' AND titik_2='.$rt[$i+1].')')->row_array();
+						$get_rute = $this->db->query('SELECT * FROM antik_metode WHERE (titik_1='.$rt[$i].' AND titik_2='.$rt[$i+1].')')->row_array();
 						if ($get_rute) {
 							$get_rute['type'] = 1;
 						} else {
-							$get_rute = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[$i+1].' AND titik_2='.$rt[$i].')')->row_array();
+							$get_rute = $this->db->query('SELECT * FROM antik_metode WHERE (titik_1='.$rt[$i+1].' AND titik_2='.$rt[$i].')')->row_array();
 							$get_rute['type'] = 2;
 						}
 						$dt['ruteArr'][] = $get_rute;
@@ -598,7 +600,8 @@ class master_data extends CI_Controller {
 							$m=$tjm['muatan'];
 							if(count($TEMP_AT)>1 && in_array($t, $rt)) continue;
 							if(!in_array($t, array_column($pq2, 'from'))) continue; // skip jika titik telah dihapus dari antrian pq
-							if($RUTE2[$from]['distance']+$j >= $RUTE2[$t]['distance']) continue; // skip jika jarak tidak lebih pendek
+							
+							//if($RUTE2[$from]['distance']+$j >= $RUTE2[$t]['distance']) continue; // skip jika jarak tidak lebih pendek
 							if($RUTE2[$from]['muatan']+$m > $muatan_maks){
 								$isMaxLoadMeet = true;
 								continue; // skip jika muatan sudah berlebih
@@ -641,11 +644,11 @@ class master_data extends CI_Controller {
 
 					$rt = explode('-', $rute_terpilih['rute']);
 					if(count($rt)>1){
-						$get_rute = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[0].' AND titik_2='.$rt[1].')')->row_array();
+						$get_rute = $this->db->query('SELECT * FROM antik_metode WHERE (titik_1='.$rt[0].' AND titik_2='.$rt[1].')')->row_array();
 						if ($get_rute) {
 							$get_rute['type'] = 1;
 						} else {
-							$get_rute = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[1].' AND titik_2='.$rt[0].')')->row_array();
+							$get_rute = $this->db->query('SELECT * FROM antik_metode WHERE (titik_1='.$rt[1].' AND titik_2='.$rt[0].')')->row_array();
 							$get_rute['type'] = 2;
 						}
 						$dt['ruteArr'][] = $get_rute;
@@ -654,11 +657,11 @@ class master_data extends CI_Controller {
 						for ($i=1; $i < count($rt)-1; $i++) {
 							$dt['ruteStr'][] = $this->db->query('SELECT nama as nama_titik FROM jalan WHERE id_jalan='.$rt[$i].' UNION SELECT nm_supir FROM supir WHERE id_supir='.$rt[$i].' UNION SELECT nm_tps FROM tps WHERE id_tps='.$rt[$i])->row_array()['nama_titik'];
 
-							$get_rute = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[$i].' AND titik_2='.$rt[$i+1].')')->row_array();
+							$get_rute = $this->db->query('SELECT * FROM antik_metode WHERE (titik_1='.$rt[$i].' AND titik_2='.$rt[$i+1].')')->row_array();
 							if ($get_rute) {
 								$get_rute['type'] = 1;
 							} else {
-								$get_rute = $this->db->query('SELECT * FROM antik WHERE (titik_1='.$rt[$i+1].' AND titik_2='.$rt[$i].')')->row_array();
+								$get_rute = $this->db->query('SELECT * FROM antik_metode WHERE (titik_1='.$rt[$i+1].' AND titik_2='.$rt[$i].')')->row_array();
 								$get_rute['type'] = 2;
 							}
 							$dt['ruteArr'][] = $get_rute;
