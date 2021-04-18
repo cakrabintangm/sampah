@@ -400,7 +400,7 @@ class master_data extends CI_Controller {
 
 			// Loop semua supir
 			$semua_supir = $this->db->from('supir')->join('angkutan','angkutan.id_ang=supir.id_ang')
-				->where("id_supir<1013")
+				// ->where("id_supir<1013")
 				->get()->result_array();
 
 			foreach($semua_supir as $supir){
@@ -469,7 +469,7 @@ class master_data extends CI_Controller {
 						$m=$tjm['muatan'];
 						if(!in_array($t, array_column($pq, 'from'))) continue; // skip jika titik telah dihapus dari antrian pq
 
-						//if($RUTE[$from]['distance']+$j >= $RUTE[$t]['distance']) continue; // skip jika jarak tidak lebih pendek  AND $m > 0
+						if($RUTE[$from]['distance']+$j >= 1000000000) continue; // skip jika jarak tidak lebih pendek  AND $m > 0
 						if($RUTE[$from]['muatan']+$m > $muatan_maks){
 							$isMaxLoadMeet = true;
 							continue; // skip jika muatan sudah berlebih
@@ -601,7 +601,7 @@ class master_data extends CI_Controller {
 							if(count($TEMP_AT)>1 && in_array($t, $rt)) continue;
 							if(!in_array($t, array_column($pq2, 'from'))) continue; // skip jika titik telah dihapus dari antrian pq
 							
-							//if($RUTE2[$from]['distance']+$j >= $RUTE2[$t]['distance']) continue; // skip jika jarak tidak lebih pendek
+							if($RUTE2[$from]['distance']+$j >= 1000000000) continue; // skip jika jarak tidak lebih pendek
 							if($RUTE2[$from]['muatan']+$m > $muatan_maks){
 								$isMaxLoadMeet = true;
 								continue; // skip jika muatan sudah berlebih
