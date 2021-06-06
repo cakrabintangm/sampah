@@ -154,37 +154,15 @@ function toColor($n) {
               <!-- /.card-header -->
               <div class="card-body">
                 <div class="row">
-                    <div class="col-md-10">
+                    <div class="col-md-6">
                       <a href="<?=base_url('master-data/jalur_pengangkutan2/generate')?>" class="btn btn-primary"> GENERATE</a>
                     </div>
-                    <?php if($this->uri->segment(3) != null) {?>
-                    <div class="col-md-2">
-                      <a target="_blank" href="<?=base_url('jalur_pengangkutan/kelompok')?>" class="btn btn-primary"> LIHAT MANUAL</a>
-                    </div>
-                    <?php } ?>
                 </div>
               </div>
               <!-- ./card-body -->
 
             </div>
             <!-- /.card -->
-
-            <!-- Card Peta Kelompok -->
-            <!-- <div class="card">
-              <div class="card-header">
-                <h5 class="card-title"><a data-toggle="collapse" href="#collapse-kelompok">Peta Kelompok</a></h5>
-              </div>
-              <div id="collapse-kelompok" class="collapse">
-                <div class="card-body">
-                  <div class="row">
-                    <div id="map-kelompok" style="width:100%;height:400px;"></div>
-                    <div id="legend-kelompok" class="panel panel-primary" style="background: white; padding: 10px;">
-                      <div class="panel-heading">KETERANGAN IKON<br>! Klik garis untuk melihat detail</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div> -->
 
             <?php if(!empty($supir)){ 
               foreach($supir as $row){ ?>
@@ -239,6 +217,8 @@ function toColor($n) {
 
             <?php }} ?>
 
+            <?php if(!empty($supir_ke_2)){ ?>
+
             <div class="card">
               <div class="card-header">
                 <h5 class="card-title"><center><strong> Jalur Pengangkutan </strong></center></h5>
@@ -255,15 +235,14 @@ function toColor($n) {
 
             </div>
 
-            <?php if(!empty($supir_ke_2)){ 
-              foreach($supir_ke_2 as $row){ ?>
+              <?php foreach($supir_ke_2 as $row){ ?>
 
             <div class="card">
               <div class="card-header">
-                <h5 class="card-title"><a data-toggle="collapse" href="#collapse<?=$row['supir']['id_supir']?>">SUPIR : <?=$row['supir']['nm_supir']?></a></h5>
+                <h5 class="card-title"><a data-toggle="collapse" href="#collapse<?=$row['supir']['id_supir']?>ke2">SUPIR : <?=$row['supir']['nm_supir']?></a></h5>
               </div>
               <!-- /.card-header -->
-              <div id="collapse<?=$row['supir']['id_supir']?>" class="collapse">
+              <div id="collapse<?=$row['supir']['id_supir']?>ke2" class="collapse">
                 <div class="card-body">
                   <div class="row">
                     <div class="col-md-10">
@@ -273,7 +252,7 @@ function toColor($n) {
                       <h6><strong>TPS :</strong> <?=$row['tps']['nm_tps']?></h6>
                     </div>
                     <div class="col-md-2">
-                      <a href="#" class="btn btn-success text-right" data-idsupir="<?=$row['supir']['id_supir']?>" data-toggle="modal" data-target="#modal_map">Lihat Peta</a>
+                      <a href="#" class="btn btn-success text-right" data-idsupir="<?=$row['supir']['id_supir']?>" data-toggle="modal" data-target="#modal_map_ke_2">Lihat Peta</a>
                     </div>
                   </div>
                   <table class="table table-bordered">
@@ -319,10 +298,31 @@ function toColor($n) {
                           <button type="button" class="close" data-dismiss="modal">&times;</button>
                         </div>
                         <div class="modal-body">
-                      <div id="legend" class="panel panel-primary" style="background: white; padding: 10px;">
+                      <div id="legend_ke_2" class="panel panel-primary" style="background: white; padding: 10px;">
                           <div class="panel-heading">KETERANGAN IKON<br>! Klik garis untuk melihat detail</div>
                       </div>
                       <div id="map" style="width:100%;height:400px;"></div>
+
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  <div id="modal_map_ke_2" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-lg">
+
+                      <!-- Modal content-->
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h4 class="modal-title">Info Path</h4>
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                      <div id="legend" class="panel panel-primary" style="background: white; padding: 10px;">
+                          <div class="panel-heading">KETERANGAN IKON<br>! Klik garis untuk melihat detail</div>
+                      </div>
+                      <div id="map_ke_2" style="width:100%;height:400px;"></div>
 
                         </div>
                       </div>
@@ -387,6 +387,9 @@ function toColor($n) {
 <!-- ChartJS -->
 <script src="<?php echo base_url().'assets/plugins/chart.js/Chart.min.js'?>"></script>
 
+<!-- Google Maps API -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBc1wq4NssgXxRoF1g9jhP6xWYOOA_hOx8&libraries=places&callback=initMap" async defer></script>
+
 
 <?php if(!empty($supir)){ ?>
 
@@ -432,7 +435,6 @@ function toColor($n) {
   }
 
   function initialize(id_supir){
-    console.log(id_supir)
     map = new google.maps.Map(document.getElementById('map'), {
       center: {lat: -3.80859, lng: 102.264435}, 
       zoom: 12
@@ -556,21 +558,12 @@ function toColor($n) {
 
       setTimeout(function() {
         directionsService.route(request, function(result, status) {
-          console.log(result);
           if (status == google.maps.DirectionsStatus.OK) {
             new google.maps.DirectionsRenderer({
                 map: map,
                 directions: result,
                 suppressMarkers: true
               });
-            // Alternative route
-            // for (var i = 0, len = result.routes.length; i < len; i++) {
-            //   new google.maps.DirectionsRenderer({
-            //     map: map,
-            //     directions: result,
-            //     routeIndex: i
-            //   });
-            // }
           }
         });
       }, index*500);
@@ -582,177 +575,13 @@ function toColor($n) {
 
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBc1wq4NssgXxRoF1g9jhP6xWYOOA_hOx8&libraries=places&callback=initMap"
-    async defer></script>
-
 <?php } ?>
-
-<script>
-  let legendKelompok = document.getElementById('legend-kelompok');
-  for (let key in icons) {
-      let type = icons[key];
-      let name = type.name;
-      let icon = type.icon;
-      let div = document.createElement('div');
-      div.innerHTML = '<img src="' + icon + '"> ' + name;
-      legendKelompok.appendChild(div);
-  }
-
-  function initMap() {
-    let myLatLng = {lat: -3.80859, lng: 102.264435};
-
-    let mapKelompok = new google.maps.Map(document.getElementById('map-kelompok'), {
-      zoom: 12,
-      center: myLatLng
-    });
-
-    let features = [
-      <?php foreach($data_jalan->result_array() as $dt){?>
-        {
-          position: new google.maps.LatLng(<?php echo $dt['latitude']; ?>, <?php echo $dt['longitude']; ?>),
-          type: 'jalan',
-          id : '<?php echo $dt['id_jalan'] ?>',
-          nama : '<?php echo $dt['nama'] ?>',
-          lat : '<?php echo $dt['latitude'] ?>',
-          lng : '<?php echo $dt['longitude'] ?>',
-        },
-      <?php } ?>
-      <?php foreach($data_tps->result_array() as $dt){?>
-        {
-          position: new google.maps.LatLng(<?php echo $dt['latitude']; ?>, <?php echo $dt['longitude']; ?>),
-          type: 'tps',
-          id : '<?php echo $dt['id_tps'] ?>',
-          nama : '<?php echo $dt['nm_tps'] ?>',
-          lat : '<?php echo $dt['latitude'] ?>',
-          lng : '<?php echo $dt['longitude'] ?>',
-        },
-      <?php } ?>
-      <?php foreach($data_supir->result_array() as $dt){?>
-        {
-          position: new google.maps.LatLng(<?php echo $dt['latitude']; ?>, <?php echo $dt['longitude']; ?>),
-          type: 'supir',
-          id :'<?php echo $dt['id_supir'] ?>',
-          nama : '<?php echo $dt['nm_supir'] ?>',
-          lat : '<?php echo $dt['latitude'] ?>',
-          lng : '<?php echo $dt['longitude'] ?>', 
-        },
-      <?php } ?>
-    ];
-
-    features.forEach(function(feature) {
-      let contentString = `
-        <div id="content">
-          <div id="siteNotice">
-          </div>
-          <h3 id="firstHeading" class="firstHeading">${feature.nama}</h3>
-          <div id="bodyContent">
-          </div>
-        </div>
-      `;
-
-      let infowindow = new google.maps.InfoWindow({
-        content: contentString
-      });
-
-      let markersKelompok = new google.maps.Marker({
-        position: feature.position,
-        icon: icons[feature.type].icon,
-        map: mapKelompok
-      });
-
-      markersKelompok.addListener('click', function() {
-        infowindow.open(mapKelompok, markersKelompok);
-      });
-    });
-
-    let flightPlans = {
-      <?php if(!empty($supir)) {
-        foreach($supir as $row) { ?>
-          <?=$row['supir']['id_supir']?> : [
-            // rumah supir
-            {
-              titik_1_lat: <?=$row['supir']['latitude']?>,
-              titik_1_long: <?=$row['supir']['longitude']?>,
-              titik_2_lat: <?=$row['ruteAwal']['latitude']?>,
-              titik_2_long: <?=$row['ruteAwal']['longitude']?>
-            },
-
-            // rute jalan
-            <?php foreach($row['ruteArr'] as $dta) { ?>
-              {
-                titik_1_lat: <?=$dta['titik_1_lat']?>,
-                titik_1_long: <?=$dta['titik_1_long']?>,
-                titik_2_lat: <?=$dta['titik_2_lat']?>,
-                titik_2_long: <?=$dta['titik_2_long']?>
-              },
-            <?php } ?>
-
-            // rute ke tps
-            {
-              titik_1_lat: <?=$row['ruteAkhir']['latitude']?>,
-              titik_1_long: <?=$row['ruteAkhir']['longitude']?>,
-              titik_2_lat: <?=$row['tps']['latitude']?>,
-              titik_2_long: <?=$row['tps']['longitude']?>
-            }
-          ],
-        <?php }
-      } ?>
-    };
-
-    function ruteKelompok(idSupir) {
-      let fpl = flightPlans[idSupir];
-
-      // DRAW ROUTE
-      let directionsService = new google.maps.DirectionsService();
-      fpl.forEach(function(fp, index) {
-        let origin = {lat: fp.titik_1_lat, lng: fp.titik_1_long};
-        let destination = {lat: fp.titik_2_lat, lng: fp.titik_2_long};
-
-        let request = {
-          origin: origin,
-          destination: destination,
-          travelMode: 'DRIVING',
-          // provideRouteAlternatives: true
-        };
-
-        setTimeout(function() {
-          directionsService.route(request, function(result, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-              new google.maps.DirectionsRenderer({
-                  map: mapKelompok,
-                  directions: result,
-                  polylineOptions: { strokeColor: '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6) },
-                  suppressMarkers: true
-                });
-            }
-          });
-        }, index*500);
-
-      });
-    }
-
-    mapKelompok.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legendKelompok);
-
-    <?php if(!empty($supir)) {
-      foreach($supir as $row) { ?>
-        ruteKelompok(<?=$row['supir']['id_supir']?>);
-        <?php }
-    } ?>
-  }
-</script>
-
-
-
-
-
-
-
 
 <?php if(!empty($supir_ke_2)){ ?>
 
 <script type="text/javascript">
 
-   var map;
+   var map_ke_2;
 
   var color = ['#002685', '#449ADF', '#4DC7FD', '#4CDE77', '#5E53C7', '#7E77D2', '#CD1E10', '#FC007F', '#FE79D1', '#763931', '#F1AB00', '#FADF00', '#000000', '#007E34', '#64D13E'];
   
@@ -771,29 +600,28 @@ function toColor($n) {
     }
   };
 
-  var legend = document.getElementById('legend');
+  var legend_ke_2 = document.getElementById('legend_ke_2');
   for (var key in icons) {
       var type = icons[key];
       var name = type.name;
       var icon = type.icon;
       var div = document.createElement('div');
       div.innerHTML = '<img src="' + icon + '"> ' + name;
-      legend.appendChild(div);
+      legend_ke_2.appendChild(div);
   }
 
-  $('#modal_map').on('shown.bs.modal', function(e) {
+  $('#modal_map_ke_2').on('shown.bs.modal', function(e) {
         var element = $(e.relatedTarget);
         var data = element.data("idsupir")
-        initialize(data);
+        initialize_ke_2(data);
     });
 
   function initMap(){
     console.log('API Loaded');
   }
 
-  function initialize(id_supir){
-    console.log(id_supir)
-    map = new google.maps.Map(document.getElementById('map'), {
+  function initialize_ke_2(id_supir){
+    map_ke_2 = new google.maps.Map(document.getElementById('map_ke_2'), {
       center: {lat: -3.80859, lng: 102.264435}, 
       zoom: 12
     });
@@ -853,11 +681,11 @@ function toColor($n) {
       var markers = new google.maps.Marker({
         position: feature.position,
         icon: icons[feature.type].icon,
-        map: map
+        map: map_ke_2
       });
 
       markers.addListener('click', function() {
-        infowindow.open(map, markers);
+        infowindow.open(map_ke_2, markers);
       });
 
     });
@@ -916,190 +744,24 @@ function toColor($n) {
 
       setTimeout(function() {
         directionsService.route(request, function(result, status) {
-          console.log(result);
           if (status == google.maps.DirectionsStatus.OK) {
             new google.maps.DirectionsRenderer({
-                map: map,
+                map: map_ke_2,
                 directions: result,
                 suppressMarkers: true
               });
-            // Alternative route
-            // for (var i = 0, len = result.routes.length; i < len; i++) {
-            //   new google.maps.DirectionsRenderer({
-            //     map: map,
-            //     directions: result,
-            //     routeIndex: i
-            //   });
-            // }
           }
         });
       }, index*500);
 
     });
 
-    map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
+    map_ke_2.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend_ke_2);
   }
 
 </script>
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBc1wq4NssgXxRoF1g9jhP6xWYOOA_hOx8&libraries=places&callback=initMap"
-    async defer></script>
 
 <?php } ?>
-
-<script>
-  let legendKelompok = document.getElementById('legend-kelompok');
-  for (let key in icons) {
-      let type = icons[key];
-      let name = type.name;
-      let icon = type.icon;
-      let div = document.createElement('div');
-      div.innerHTML = '<img src="' + icon + '"> ' + name;
-      legendKelompok.appendChild(div);
-  }
-
-  function initMap() {
-    let myLatLng = {lat: -3.80859, lng: 102.264435};
-
-    let mapKelompok = new google.maps.Map(document.getElementById('map-kelompok'), {
-      zoom: 12,
-      center: myLatLng
-    });
-
-    let features = [
-      <?php foreach($data_jalan->result_array() as $dt){?>
-        {
-          position: new google.maps.LatLng(<?php echo $dt['latitude']; ?>, <?php echo $dt['longitude']; ?>),
-          type: 'jalan',
-          id : '<?php echo $dt['id_jalan'] ?>',
-          nama : '<?php echo $dt['nama'] ?>',
-          lat : '<?php echo $dt['latitude'] ?>',
-          lng : '<?php echo $dt['longitude'] ?>',
-        },
-      <?php } ?>
-      <?php foreach($data_tps->result_array() as $dt){?>
-        {
-          position: new google.maps.LatLng(<?php echo $dt['latitude']; ?>, <?php echo $dt['longitude']; ?>),
-          type: 'tps',
-          id : '<?php echo $dt['id_tps'] ?>',
-          nama : '<?php echo $dt['nm_tps'] ?>',
-          lat : '<?php echo $dt['latitude'] ?>',
-          lng : '<?php echo $dt['longitude'] ?>',
-        },
-      <?php } ?>
-      <?php foreach($data_supir->result_array() as $dt){?>
-        {
-          position: new google.maps.LatLng(<?php echo $dt['latitude']; ?>, <?php echo $dt['longitude']; ?>),
-          type: 'supir',
-          id :'<?php echo $dt['id_supir'] ?>',
-          nama : '<?php echo $dt['nm_supir'] ?>',
-          lat : '<?php echo $dt['latitude'] ?>',
-          lng : '<?php echo $dt['longitude'] ?>', 
-        },
-      <?php } ?>
-    ];
-
-    features.forEach(function(feature) {
-      let contentString = `
-        <div id="content">
-          <div id="siteNotice">
-          </div>
-          <h3 id="firstHeading" class="firstHeading">${feature.nama}</h3>
-          <div id="bodyContent">
-          </div>
-        </div>
-      `;
-
-      let infowindow = new google.maps.InfoWindow({
-        content: contentString
-      });
-
-      let markersKelompok = new google.maps.Marker({
-        position: feature.position,
-        icon: icons[feature.type].icon,
-        map: mapKelompok
-      });
-
-      markersKelompok.addListener('click', function() {
-        infowindow.open(mapKelompok, markersKelompok);
-      });
-    });
-
-    let flightPlansKe2 = {
-      <?php if(!empty($supir_ke_2)) {
-        foreach($supir_ke_2 as $row) { ?>
-          <?=$row['supir']['id_supir']?> : [
-            // rumah supir
-            {
-              titik_1_lat: <?=$row['supir']['latitude']?>,
-              titik_1_long: <?=$row['supir']['longitude']?>,
-              titik_2_lat: <?=$row['ruteAwal']['latitude']?>,
-              titik_2_long: <?=$row['ruteAwal']['longitude']?>
-            },
-
-            // rute jalan
-            <?php foreach($row['ruteArr'] as $dta) { ?>
-              {
-                titik_1_lat: <?=$dta['titik_1_lat']?>,
-                titik_1_long: <?=$dta['titik_1_long']?>,
-                titik_2_lat: <?=$dta['titik_2_lat']?>,
-                titik_2_long: <?=$dta['titik_2_long']?>
-              },
-            <?php } ?>
-
-            // rute ke tps
-            {
-              titik_1_lat: <?=$row['ruteAkhir']['latitude']?>,
-              titik_1_long: <?=$row['ruteAkhir']['longitude']?>,
-              titik_2_lat: <?=$row['tps']['latitude']?>,
-              titik_2_long: <?=$row['tps']['longitude']?>
-            }
-          ],
-        <?php }
-      } ?>
-    };
-
-    function ruteKelompokKe2(idSupir) {
-      let fpl = flightPlansKe2[idSupir];
-
-      // DRAW ROUTE
-      let directionsService = new google.maps.DirectionsService();
-      fpl.forEach(function(fp, index) {
-        let origin = {lat: fp.titik_1_lat, lng: fp.titik_1_long};
-        let destination = {lat: fp.titik_2_lat, lng: fp.titik_2_long};
-
-        let request = {
-          origin: origin,
-          destination: destination,
-          travelMode: 'DRIVING',
-          // provideRouteAlternatives: true
-        };
-
-        setTimeout(function() {
-          directionsService.route(request, function(result, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-              new google.maps.DirectionsRenderer({
-                  map: mapKelompok,
-                  directions: result,
-                  polylineOptions: { strokeColor: '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6) },
-                  suppressMarkers: true
-                });
-            }
-          });
-        }, index*500);
-
-      });
-    }
-
-    mapKelompok.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legendKelompok);
-
-    <?php if(!empty($supir_ke_2)) {
-      foreach($supir_ke_2 as $row) { ?>
-        ruteKelompokKe2(<?=$row['supir']['id_supir']?>);
-        <?php }
-    } ?>
-  }
-</script>
 
 </body>
 

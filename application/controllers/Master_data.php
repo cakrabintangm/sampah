@@ -1024,6 +1024,23 @@ class master_data extends CI_Controller {
 		return $terdekat[0]['id_jalan'];
 	}
 
+	function terdekatSupir($idSupir){
+		$supir = $this->db->where('id_supir', $idSupir)->get('supir')->row_array();
+		// Simpang terdekat dari supir
+		$terdekat = $this->db->query('SELECT *, (6371 * 
+			acos(
+				cos(radians('.$supir['latitude'].')) * 
+				cos(radians(latitude)) * 
+				cos(radians(longitude) - 
+				radians('.$supir['longitude'].')) + 
+				sin(radians('.$supir['latitude'].')) * 
+				sin(radians(latitude))
+			)
+		) AS distance from jalan WHERE id_jalan < 7001 OR id_jalan > 7005 HAVING distance < 10 ORDER BY distance ASC')->result_array();
+
+		var_dump($terdekat);
+	}
+
 	function jalur_sopir($supir){
 
 	}
